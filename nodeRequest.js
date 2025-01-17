@@ -30,19 +30,24 @@ function findFirstUniqueChar(arr){
     return [index,ch]
 }
 
-app.use((req,res,next)=>{
-    const {text_to_process} = req.body
-    if (text_to_process == 'keetnode'){
-        console.log(req.method,req.hostname,req.path)
+let a = ((req,res,next)=>{
+    if (!req.body || typeof req.body != "object") {
+        return res.status(500).json({message: "Please send data in JSON format"});
+    } 
+
+    if (!req.body.text_to_process) {
+        return res.status(500).json({message: "please pass text_to_process in body"});
     }
-    next()
+    
+    next();
 })
 
-app.post("/first-unique-character",async(req,res)=>{
+app.post("/first-unique-character",a,async(req,res)=>{
     try{
         const {text_to_process} = req.body
         const [index ,ch] = findFirstUniqueChar(text_to_process)
         let date = new Date()
+        console.log(`[${date.toISOString()}]`, req.method, req.hostname, req.path)
         let obj = {
             "first_unique_char": ch,
             "first_unique_char_index": index,
